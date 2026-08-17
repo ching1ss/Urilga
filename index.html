@@ -4,6 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Хилийн цэргийн 0245 дугаар ангийн түүхт 50 жилийн урилга</title>
+
+
+<!-- ====================================================================
+     ЗАСВАРЛАХ: Facebook Messenger, WhatsApp зэрэгт линкээ илгээхэд
+     дээрээ зураг/гарчиг харагдуулах тохиргоо.
+     - "content"-уудыг доор өөрийн мэдээллээр солино.
+     - og:image-д ЗААВАЛ бүтэн https:// холбоос (GitHub Pages линк) байх ёстой,
+       ердийн "photos/hero.jpg" гэсэн богино зам ажиллахгүй.
+       Жишээ: https://YOUR_USERNAME.github.io/urilga/photos/hero.jpg
+     - Хамгийн сайн харагдах хэмжээ: 1200 x 630 px зураг.
+     ==================================================================== -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Хуримын урилга — Нэр 1 & Нэр 2">
+<meta property="og:description" content="Таныг хүндэтгэн урьж байна">
+<meta property="og:image" content="https://YOUR_USERNAME.github.io/urilga/photos/hero.jpg">
+<meta property="og:url" content="https://YOUR_USERNAME.github.io/urilga/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Хуримын урилга — Нэр 1 & Нэр 2">
+<meta name="twitter:description" content="Таныг хүндэтгэн урьж байна">
+<meta name="twitter:image" content="https://ching1ss.github.io/urilga/photos/hero.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500;1,600&family=Cormorant+SC:wght@500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
 <style>
@@ -55,13 +75,13 @@
   .cover-hint{margin-top:26px; color:#7a6f57; font-size:12px; letter-spacing:.3em;}
 
   /* ================= HERO ================= */
-  #hero{
-    position:relative; min-height:100svh; display:flex; flex-direction:column;
+ #hero{
+    position:relative; min-height:100vh; min-height:100svh; display:flex; flex-direction:column;
     align-items:center; justify-content:flex-end; text-align:center; padding:64px 24px 56px;
     background:
       linear-gradient(180deg, rgba(10,8,6,.35) 0%, rgba(10,8,6,.55) 55%, rgba(10,8,6,.9) 100%),
       var(--hero-photo, linear-gradient(160deg,#2b2622,#0f0d0b 70%));
-    background-size:cover; background-position:center;
+    background-size:cover; background-position:var(--hero-photo-pos, center); background-attachment:scroll;
     overflow:hidden;
   }
   .confetti{position:absolute; inset:0; pointer-events:none;}
@@ -262,6 +282,12 @@ const CONFIG = {
   // Хоосон орхивол харанхуй градиент дэвсгэр хэвээр байна.
   heroPhotoUrl: "photos/hero.jpg",
 
+  // Зурган дээрх ГОЛ ДҮРС (жиш нь нүүр царай) таслагдаж байвал энд тохируулна.
+  // Утга сонголт: "center" (төв), "center top" (дээш), "center 25%" (дээшлүүлэх %),
+  //               "center bottom" (доош түлхэх)
+  // Ихэвчлэн зогсоод авахуулсан гэрэл зураг бол "center top" эсвэл "center 20%" сайн тохирдог.
+  heroPhotoPosition: "center",
+
   // ---- 3) ДУУ (дэвсгэр хөгжим) -------------------------------------------
   // Алхам 1: mp3 файлаа html-тэй ИЖИЛ хавтсанд, эсвэл "music/" дэд хавтсанд хуулж тавина.
   // Алхам 2: доорх мөрөнд файлын нэрийг бич. Жишээ:
@@ -286,6 +312,7 @@ document.getElementById('mapsLinkBtn').href = CONFIG.mapsLink;
 if (CONFIG.heroPhotoUrl) {
   document.getElementById('hero').style.setProperty('--hero-photo', `url('${CONFIG.heroPhotoUrl}')`);
 }
+document.getElementById('hero').style.setProperty('--hero-photo-pos', CONFIG.heroPhotoPosition || 'center');
 if (CONFIG.audioSrc) {
   document.getElementById('bgmSrc').src = CONFIG.audioSrc;
   document.getElementById('bgm').load();
