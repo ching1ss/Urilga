@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Хуримын урилга</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500;1,600&family=Cormorant+SC:wght@500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Neucha&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#151210;          /* warm near-black */
+    --bg-soft:#1D1815;
+    --card:#1B1613;
+    --gold:#D9B26A;         /* main gold */
+    --gold-deep:#C89B3C;
+    --gold-dim:rgba(217,178,106,.35);
+    --cream:#EFE3C3;        /* cover envelope tone */
+    --cream-2:#F6EED8;
+    --ink:#EDE6D6;          /* body text on dark */
+    --ink-dim:#B9AF9B;
+    --ease:cubic-bezier(.22,.9,.32,1);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:'PT Serif',serif; overflow-x:hidden;}
+  ::selection{background:var(--gold-dim); color:var(--bg);}
+  .script{font-family:'Neucha',cursive;}
+  .sc{font-family:'Cormorant SC',serif; letter-spacing:.32em; text-transform:uppercase;}
+  .display{font-family:'Cormorant Garamond',serif;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important;}
+  }
+
+  .label{
+    display:flex; align-items:center; justify-content:center; gap:16px;
+    color:var(--gold); font-size:13px; margin-bottom:8px;
+  }
+  .label .ln{height:1px; width:34px; background:var(--gold-dim);}
+
+  .reveal{opacity:0; transform:translateY(22px); transition:opacity 1s var(--ease), transform 1s var(--ease);}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  /* ================= COVER ================= */
+  #cover{
+    position:fixed; inset:0; z-index:100; cursor:pointer;
+    background:radial-gradient(120% 100% at 50% 30%, var(--cream-2), var(--cream) 75%);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    transition:opacity 1s var(--ease), visibility 1s var(--ease);
+  }
+  #cover.hide{opacity:0; visibility:hidden; pointer-events:none;}
+  .envelope{width:150px; height:104px; position:relative; animation:float 3.4s ease-in-out infinite;}
+  @keyframes float{0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);}}
+  .envelope svg{width:100%; height:100%; display:block;}
+  .cover-hint{margin-top:26px; color:#7a6f57; font-size:12px; letter-spacing:.3em;}
+
+  /* ================= HERO ================= */
+  #hero{
+    position:relative; min-height:100svh; display:flex; flex-direction:column;
+    align-items:center; justify-content:flex-end; text-align:center; padding:64px 24px 56px;
+    background:
+      linear-gradient(180deg, rgba(10,8,6,.35) 0%, rgba(10,8,6,.55) 55%, rgba(10,8,6,.9) 100%),
+      var(--hero-photo, linear-gradient(160deg,#2b2622,#0f0d0b 70%));
+    background-size:cover; background-position:center;
+    overflow:hidden;
+  }
+  .confetti{position:absolute; inset:0; pointer-events:none;}
+  .confetti span{
+    position:absolute; width:7px; height:12px; border-radius:1px; opacity:.75;
+    animation:drift 6s ease-in-out infinite;
+  }
+  @keyframes drift{0%,100%{transform:translateY(0) rotate(var(--r,20deg));} 50%{transform:translateY(-14px) rotate(calc(var(--r,20deg) * -1));}}
+
+  .music-btn{
+    position:absolute; top:22px; right:22px; width:38px; height:38px; border-radius:50%;
+    border:1px solid var(--gold-dim); background:rgba(20,17,14,.5); backdrop-filter:blur(2px);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:5;
+  }
+  .music-btn svg{width:16px; height:16px; fill:var(--gold);}
+
+  .hero-title{
+    font-size:clamp(40px,8vw,64px); color:var(--gold); margin:10px 0 4px; line-height:1.1;
+  }
+  .scroll-cue{
+    margin-top:38px; color:var(--ink-dim); font-size:11px; letter-spacing:.3em;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+  }
+  .chev{width:9px; height:9px; border-right:1px solid var(--gold); border-bottom:1px solid var(--gold);
+    transform:rotate(45deg); animation:bounce 1.8s ease-in-out infinite;}
+  @keyframes bounce{0%,100%{opacity:.3; transform:rotate(45deg) translate(0,0);} 50%{opacity:1; transform:rotate(45deg) translate(3px,3px);}}
+
+  /* ================= SECTIONS (dark) ================= */
+  section.dark{background:var(--bg-soft); padding:100px 24px;}
+  .wrap{max-width:640px; margin:0 auto; text-align:center;}
+  .verse{font-size:16px; line-height:2.1; color:var(--ink); margin:30px 0;}
+  .verse em{font-style:italic; color:var(--ink-dim);}
+  .invite-line{font-size:clamp(24px,4vw,32px); color:var(--gold); margin-top:8px;}
+
+  /* countdown card */
+  .card{
+    margin-top:34px; border:1px solid var(--gold-dim); background:var(--card);
+    padding:38px 28px 30px; display:inline-block; width:100%; max-width:460px;
+  }
+  .card .date{font-size:clamp(22px,3.4vw,28px); letter-spacing:.16em; color:var(--ink); font-weight:600;}
+  .card .day{color:var(--gold); margin:8px 0 18px; font-size:19px;}
+  .card .time{font-size:clamp(26px,4vw,32px); color:var(--ink); font-weight:700; margin-bottom:26px;}
+  .count-row{display:flex; justify-content:center; gap:10px;}
+  .count-cell{
+    flex:1; background:var(--bg); border:1px solid var(--gold-dim); padding:14px 4px 10px;
+  }
+  .count-num{display:block; font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; color:var(--gold);}
+  .count-label{display:block; font-size:10px; letter-spacing:.16em; color:var(--ink-dim); margin-top:4px;}
+
+  /* address */
+  .venue{font-size:clamp(24px,4vw,30px); color:var(--gold); margin:6px 0 14px;}
+  .addr-line{color:var(--ink-dim); font-size:15px; line-height:1.9;}
+  .pill-btn{
+    display:inline-flex; align-items:center; gap:8px; padding:13px 30px; border-radius:999px;
+    border:1px solid var(--gold); color:var(--gold); text-decoration:none; font-size:14px;
+    letter-spacing:.1em; transition:background .3s var(--ease), color .3s var(--ease);
+  }
+  .pill-btn:hover{background:var(--gold); color:var(--bg);}
+
+  /* footer */
+  #footer{background:var(--bg); text-align:center; padding:80px 24px 70px;}
+  .foot-date{color:var(--gold); font-size:20px; letter-spacing:.3em; margin-top:24px; font-family:'Cormorant Garamond',serif; font-weight:600;}
+  .foot-line{color:var(--ink-dim); font-style:italic; font-size:14px;}
+</style>
+</head>
+<body>
+
+<!-- ================= COVER ================= -->
+<div id="cover">
+  <div class="envelope">
+    <svg viewBox="0 0 150 104" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="6,10 144,10 144,98 6,98" fill="#E6D8AF" stroke="#C9A227" stroke-width="1"/>
+      <polygon points="6,10 75,58 144,10" fill="#171310"/>
+      <polygon points="6,98 60,52 6,50" fill="#DCCB9C"/>
+      <polygon points="144,98 90,52 144,50" fill="#DCCB9C"/>
+      <circle cx="75" cy="45" r="13" fill="#D9B26A" stroke="#8A6A20" stroke-width="1"/>
+      <circle cx="75" cy="45" r="4.5" fill="#171310"/>
+    </svg>
+  </div>
+  <div class="cover-hint sc">Нээхийн тулд дарна уу</div>
+</div>
+
+<!-- ================= HERO ================= -->
+<section id="hero">
+  <div class="confetti" id="confetti"></div>
+  <div class="music-btn" id="musicBtn" title="Хөгжим">
+    <svg id="musicIconOn" viewBox="0 0 24 24"><path d="M3 10v4h4l5 5V5L7 10H3z"/><path d="M16 8a5 5 0 010 8" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+    <svg id="musicIconOff" viewBox="0 0 24 24" style="display:none;"><path d="M3 10v4h4l5 5V5L7 10H3z"/><path d="M15 9l6 6M21 9l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+  </div>
+  <div class="label sc"><span class="ln"></span><span>Урилга</span><span class="ln"></span></div>
+  <h1 class="hero-title script reveal in" id="coupleNames">Нэр 1 &amp; Нэр 2</h1>
+  <div class="scroll-cue">
+    <span>Доош гүйлгэнэ үү</span>
+    <span class="chev"></span>
+  </div>
+</section>
+
+<!-- ================= WELCOME / INVITE ================= -->
+<section class="dark" id="welcome">
+  <div class="wrap">
+    <div class="label sc"><span class="ln"></span><span>Хүндэт зочинд</span><span class="ln"></span></div>
+    <!-- ЗАСВАРЛАХ: доорх шүлгийг өөрийн үгээр солино -->
+    <p class="verse reveal">
+      Хаан бугуйвчаар жаргал нэгтгэж<br>
+      Хатан сүйхээр заяа зангидаж байгаа<br>
+      бидний хуримын ёслол хүндэтгэлийн<br>
+      хүлээн авалтад хүрэлцэн ирэхийг урьж байна.
+    </p>
+    <!-- ЗАСВАРЛАХ: урих гол мөрийг доор бичнэ -->
+    <div class="invite-line script reveal">Эрхэм хүндэт таныг урьж байна</div>
+  </div>
+</section>
+
+<!-- ================= COUNTDOWN ================= -->
+<section class="dark" id="countdown">
+  <div class="wrap">
+    <div class="label sc"><span class="ln"></span><span>Эхлэх цаг</span><span class="ln"></span></div>
+    <div class="card reveal">
+      <div class="date" id="dateDisplay">2026 · XX · XX</div>
+      <div class="day script" id="dayDisplay">Гараг</div>
+      <div class="time" id="timeDisplay">XX:XX</div>
+      <div class="count-row">
+        <div class="count-cell"><span class="count-num" id="cd-days">00</span><span class="count-label">ХОНОГ</span></div>
+        <div class="count-cell"><span class="count-num" id="cd-hours">00</span><span class="count-label">ЦАГ</span></div>
+        <div class="count-cell"><span class="count-num" id="cd-mins">00</span><span class="count-label">МИН</span></div>
+        <div class="count-cell"><span class="count-num" id="cd-secs">00</span><span class="count-label">СЕК</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ADDRESS ================= -->
+<section class="dark" id="address">
+  <div class="wrap">
+    <div class="label sc"><span class="ln"></span><span>Хаяг</span><span class="ln"></span></div>
+    <div class="venue script" id="venueDisplay">Ресторан / Танхим</div>
+    <div class="addr-line" id="addrDisplay">Хаягийн дэлгэрэнгүй мэдээлэл</div>
+    <a class="pill-btn reveal" id="mapsLinkBtn" href="#" target="_blank" rel="noopener" style="margin-top:26px;">📍 Газрын зураг харах</a>
+  </div>
+</section>
+
+<!-- ================= SECOND VERSE ================= -->
+<section class="dark" id="verse2">
+  <div class="wrap">
+    <div class="label sc"><span class="ln"></span><span>Ураг холбон барилдах</span><span class="ln"></span></div>
+    <!-- ЗАСВАРЛАХ: доорх шүлгийг өөрийн үгээр солино -->
+    <p class="verse reveal">
+      Учралт энэ өдөр —<br>
+      урьсан бидний ураг батжиж,<br>
+      уригдсан таны өлмий бат оршиг.
+    </p>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<section id="footer">
+  <div class="wrap">
+    <!-- ЗАСВАРЛАХ: доорх төгсгөлийн мөрийг өөрийн үгээр солино -->
+    <p class="foot-line">Ирж, баяраа хамт хуваалцана гэдэгт итгэлтэй байна</p>
+    <div class="foot-date sc" id="footDate">2026 · XX · XX</div>
+  </div>
+</section>
+
+<audio id="bgm" loop preload="none">
+  <!-- Дуугаа энд оруулна: mp3 файлаа html-тэй ижил хавтсанд байрлуулаад src-г бөглөнө -->
+  <source id="bgmSrc" src="" type="audio/mpeg">
+</audio>
+
+<script>
+/* =========================================================================
+   ЗАСВАРЛАХ ГАЗАР — доорх утгуудыг л өөрчилвөл хангалттай.
+   HTML/CSS-ийн бусад хэсэгт хүрэх шаардлагагүй.
+   ========================================================================= */
+const CONFIG = {
+
+  // ---- 1) ҮГ, ТЕКСТ ----------------------------------------------------
+  coupleNames: "Нэр 1 & Нэр 2",              // hero-н гарчиг дээрх нэрс
+
+  eventDateISO: "2026-09-26T17:00:00",       // countdown-ийн тоолж эхлэх ЗОРИЛТОТ огноо/цаг
+                                              // Формат: "ОНОО-САР-ӨДӨРTЦАГ:МИН:СЕК" (24 цагийн формат)
+  dateDisplay:  "2026 · 09 · 26",            // дэлгэцэн дээр харагдах огноо (чөлөөт формат)
+  dayDisplay:   "Бямба гараг",               // гарагийн нэр (script фонтоор гарна)
+  timeDisplay:  "17:00",                     // дэлгэцэн дээр харагдах цаг
+
+  venueName:    "Ресторан / Танхимын нэр",   // хаягийн script гарчиг
+  addressText:  "Хаягийн 1-р мөр, хаягийн 2-р мөр", // дэлгэрэнгүй хаяг (нэг мөрөнд)
+  mapQuery:     "Ulaanbaatar",               // Google Maps-аас байршил хайхад ашиглах нэр/хаяг
+  mapsLink:     "https://maps.google.com/?q=Ulaanbaatar", // "Газрын зураг харах" товч дарахад нээгдэх линк
+                                              //   → Google Maps дээр байршлаа олоод "Share" → "Copy link"-ийг энд тавина
+
+  // ---- 2) ЗУРАГ (hero-н дэвсгэр зураг) ----------------------------------
+  // Алхам 1: гэрлэн зургаа (эсвэл couple photo) урилгын html файлтай ИЖИЛ
+  //          хавтсанд, эсвэл "photos/" дэд хавтсанд хуулж тавина.
+  // Алхам 2: доорх мөрөнд файлын нэрийг бич. Жишээ:
+  //          heroPhotoUrl: "hero.jpg"
+  //          heroPhotoUrl: "photos/hero.jpg"
+  //          heroPhotoUrl: "https://raw.githubusercontent.com/.../hero.jpg"  (GitHub дээр байрлуулсан бол)
+  // Хоосон орхивол харанхуй градиент дэвсгэр хэвээр байна.
+  heroPhotoUrl: "",
+
+  // ---- 3) ДУУ (дэвсгэр хөгжим) -------------------------------------------
+  // Алхам 1: mp3 файлаа html-тэй ИЖИЛ хавтсанд, эсвэл "music/" дэд хавтсанд хуулж тавина.
+  // Алхам 2: доорх мөрөнд файлын нэрийг бич. Жишээ:
+  //          audioSrc: "music.mp3"
+  //          audioSrc: "music/wedding-song.mp3"
+  // Хавтас (envelope) дээр дарж нээх мөчид дуу автоматаар эхэлж,
+  // баруун дээд буланд байрлах ▶/✕ товчоор унтраах/асаах боломжтой.
+  // Хоосон орхивол хөгжмийн товч харагдах ч дуу гарахгүй.
+  audioSrc: ""
+};
+/* ========================================================================= */
+
+document.getElementById('coupleNames').textContent = CONFIG.coupleNames;
+document.getElementById('dateDisplay').textContent = CONFIG.dateDisplay;
+document.getElementById('dayDisplay').textContent = CONFIG.dayDisplay;
+document.getElementById('timeDisplay').textContent = CONFIG.timeDisplay;
+document.getElementById('venueDisplay').textContent = CONFIG.venueName;
+document.getElementById('addrDisplay').textContent = CONFIG.addressText;
+document.getElementById('footDate').textContent = CONFIG.dateDisplay;
+document.getElementById('mapsLinkBtn').href = CONFIG.mapsLink;
+
+if (CONFIG.heroPhotoUrl) {
+  document.getElementById('hero').style.setProperty('--hero-photo', `url('${CONFIG.heroPhotoUrl}')`);
+}
+if (CONFIG.audioSrc) {
+  document.getElementById('bgmSrc').src = CONFIG.audioSrc;
+  document.getElementById('bgm').load();
+}
+
+// confetti dots
+const colors = ['#F2C9D6','#BFE3D6','#E7D8F5','#F6EED8','#D9B26A'];
+const confettiHost = document.getElementById('confetti');
+for (let i = 0; i < 16; i++) {
+  const s = document.createElement('span');
+  const left = Math.random()*100, top = Math.random()*70+8;
+  const rot = Math.random()*60-30;
+  const delay = Math.random()*4;
+  s.style.left = left+'%'; s.style.top = top+'%';
+  s.style.background = colors[i % colors.length];
+  s.style.setProperty('--r', rot+'deg');
+  s.style.animationDelay = delay+'s';
+  confettiHost.appendChild(s);
+}
+
+// cover open
+const cover = document.getElementById('cover');
+const bgm = document.getElementById('bgm');
+let musicOn = false;
+function openCover(){
+  cover.classList.add('hide');
+  if (CONFIG.audioSrc) {
+    bgm.play().then(()=>{ musicOn = true; syncMusicIcon(); }).catch(()=>{ musicOn = false; syncMusicIcon(); });
+  }
+}
+cover.addEventListener('click', openCover);
+
+// music toggle button
+const musicBtn = document.getElementById('musicBtn');
+const iconOn = document.getElementById('musicIconOn');
+const iconOff = document.getElementById('musicIconOff');
+function syncMusicIcon(){
+  iconOn.style.display = musicOn ? 'block' : 'none';
+  iconOff.style.display = musicOn ? 'none' : 'block';
+}
+musicBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  if (!CONFIG.audioSrc) return;
+  if (musicOn) { bgm.pause(); musicOn = false; }
+  else { bgm.play().catch(()=>{}); musicOn = true; }
+  syncMusicIcon();
+});
+syncMusicIcon();
+
+// scroll reveal
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); });
+},{threshold:.2});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+// countdown
+const target = new Date(CONFIG.eventDateISO).getTime();
+function tick(){
+  const diff = Math.max(0, target - Date.now());
+  document.getElementById('cd-days').textContent = String(Math.floor(diff/86400000)).padStart(2,'0');
+  document.getElementById('cd-hours').textContent = String(Math.floor((diff%86400000)/3600000)).padStart(2,'0');
+  document.getElementById('cd-mins').textContent = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+  document.getElementById('cd-secs').textContent = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+}
+tick();
+setInterval(tick, 1000);
+</script>
+</body>
+</html>
